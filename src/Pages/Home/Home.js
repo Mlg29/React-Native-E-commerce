@@ -4,8 +4,10 @@ import { FontAwesome, MaterialIcons, Ionicons, Entypo } from '@expo/vector-icons
 
 import {foodName, foodItems} from "../../utils"
 
-const Home = () => {
+const Home = ({navigation}) => {
     const [foodNames, setFoodNames] = useState("Burgers")
+
+    const locations = "745 Lincon Street"
 
    
 
@@ -28,7 +30,7 @@ const Home = () => {
 
                     }}
                 >
-                    <Text style={{ fontSize: 18 }}>Location</Text>
+                    <Text style={{ fontSize: 18 }}>{locations}</Text>
                 </View>
 
 
@@ -46,6 +48,8 @@ const Home = () => {
         </View>
     }
 
+
+
     return (
         <SafeAreaView style={styles.container}>
             {renderHeader()}
@@ -58,17 +62,18 @@ const Home = () => {
                 showsHorizontalScrollIndicator={false}
                 data={foodName}
                 keyExtractor={item => item.id}
-                renderItem = {item => {
+                renderItem = {({item}) => {
                    return <TouchableOpacity
-                                style={item.item.name === foodNames ? styles.miniImage : styles.ntMiniImage}
-                                onPress={() => setFoodNames(item.item.name)}
+                                style={item.name === foodNames ? styles.miniImage : styles.ntMiniImage}
+                                onPress={() => setFoodNames(item.name)}
+                                key={item.id}
                             >
                                 <View >
-                                    <View style={item.item.name === foodNames ? styles.image1 : styles.ntImage1}>
-                                         <Image source={{uri: item.item.image}} style={styles.imageBody} />
+                                    <View style={item.name === foodNames ? styles.image1 : styles.ntImage1}>
+                                         <Image source={{uri: item.image}} style={styles.imageBody} />
                                     </View>
                                    
-                                    <Text style={item.item.name === foodNames ? styles.imageText : styles.ntImageText}>{item.item.name}</Text>
+                                    <Text style={item.name === foodNames ? styles.imageText : styles.ntImageText}>{item.name}</Text>
                                 </View>
                             
                        </TouchableOpacity>
@@ -78,25 +83,27 @@ const Home = () => {
             <FlatList
                 data={foodItems}
                 keyExtractor={item => item.id}
-                renderItem={item => {
-                    return <TouchableOpacity
+                renderItem={({item}) => {
+                    return item.category === foodNames ? (<TouchableOpacity
                             style={styles.imageContainer}
+                            key={item.id}
+                            onPress={() => navigation.navigate('Order', {id: item.id, name: item.name})}
                         >
                         <View>
-                            <Image source={{uri: item.item.image}} style={styles.foodImage} />
+                            <Image source={{uri: item.image}} style={styles.foodImage} />
                         </View>
                         <View>
-                            <Text style={styles.deliveryBox}>{item.item.delivery}</Text>
+                            <Text style={styles.deliveryBox}>{item.delivery}</Text>
                         </View>
                         <View>
-                            <Text style={{fontSize: 20, paddingTop: 8}}>{item.item.name}</Text>
+                            <Text style={{fontSize: 20, paddingTop: 8}}>{item.name}</Text>
                             <View style={{flexDirection: 'row', justifyContent: 'space-between', width: 80}}>
-                                <Text><Entypo name="star" size={14} color="#FF7F50" />{item.item.rating}</Text>
-                                <Text>- <FontAwesome name="dollar" size={14} color="black" />{item.item.price}</Text>
+                                <Text><Entypo name="star" size={14} color="#FF7F50" />{item.rating}</Text>
+                                <Text>- <FontAwesome name="dollar" size={14} color="black" />{item.price}</Text>
                             </View>
                         </View>
                         
-                    </TouchableOpacity>
+                    </TouchableOpacity>) : null
                 }}
             />
         </SafeAreaView>
@@ -114,6 +121,7 @@ const styles = StyleSheet.create({
     miniContainer: {
         paddingHorizontal: 20,
         marginTop: 20,
+        marginBottom: 10,
     },
     miniContainerText: {
         fontSize: 30,
